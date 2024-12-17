@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<center><h2>Reviews</h2></center>
+<div class="container">
+    <div class="row">
+        {% for review in reveiws %}
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">{{review.name}}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                  <p class="card-text">{{review.review}}</p>
+                </div>
+              </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content%}

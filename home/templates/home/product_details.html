@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <!-- big product image -->
+             <h1>{{product.name}}</h1>
+             <img src="{{product.image.url}}" alt="default" height="500px" width="500">
+        </div>
+        <div class="col" style="margin-top: 150px;">
+             <h3>Product Description</h3>
+             <h5>{{product.detail_description}}</h5>
+        </div>
+    </div>
+</div>
+{% endblock content %}
