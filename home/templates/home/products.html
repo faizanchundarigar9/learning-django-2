@@ -13,6 +13,7 @@
                     <p class="card-text">{{product.description}}</p>
                     <h5>Price : {{product.price}}/-</h5>
                     <a href="{% url 'product_details' product.id %}" class="btn btn-primary">Buy Now</a>
+                    <a href="{% url 'add_to_cart'  product.id%}" class="btn btn-primary">Add to Cart</a>
                     <a href="{% url  'product_reviews' product.id %}" class="btn btn-primary">Reviews</a>
                 </div>
             </div>

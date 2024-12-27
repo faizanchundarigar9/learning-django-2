@@ -4,6 +4,11 @@
 
 <div class="container">
     <div class="row">
+        
+        {% if user.is_authenticated %}
+           <p>Welcome, {{ user.username }}!</p>  
+        {% endif %}
+
         {% for category in categories %}
         <div class="col mt-3 mb-3">
             <div class="card" style="width: 18rem;">
