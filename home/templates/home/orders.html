@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ol>
+{% for order in orders %}
+    <li>
+        <a href="{% url 'orders' order.id %}">Order Details</a>
+    </li>
+{% endfor %}
+</ol>
+{% endblock content %}

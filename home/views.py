@@ -2,11 +2,12 @@ from django.urls import path
 from django.shortcuts import render, redirect
 from .models import Product, Reviews, Category
 from django.shortcuts import get_object_or_404
-from .forms import InputForm
+from .forms import  CheckoutForm
 from django.contrib.auth import authenticate, login, get_user_model
 from home.models import Cart, CartProduct
-
-
+from django.shortcuts import HttpResponse
+from .models import Orders, OrderItems
+from django.contrib import messages
 
 def home_view(request):
     categories = Category.objects.all()
@@ -59,15 +60,66 @@ def cart_view(request):
     # Fetch the cart for the logged-in user
     cart = Cart.objects.get(user=request.user)
     cart_products = CartProduct.objects.filter(cart=cart)
+    total = 0
+
+    # Process the form submission for quantity change
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity'))
+
+        # Find the CartProduct and update the quantity
+        cart_product = CartProduct.objects.get(cart=cart, product_id=product_id)
+        if quantity > 0:  # Ensure the quantity is greater than 0
+            cart_product.quantity = quantity
+            cart_product.save()
+
+        # Recalculate the total price after updating the quantity
+        total = 0
+        for cart_product in cart_products:
+            total += cart_product.product.price * cart_product.quantity
+        
+        cart.total = total
+        cart.save()
+
+        # Redirect back to the same page to reflect the updated cart
+        return redirect('viewcart')
+
+    # Recalculate the total price
+    for cart_product in cart_products:
+        total += cart_product.product.price * cart_product.quantity
+
+    cart.total = total
+    cart.save()
+
     context = {
         'cart': cart,
         'cart_products': cart_products,
     }
+
     return render(request, 'home/cart.html', context)
+
+# def cart_view(request):
+#     # Fetch the cart for the logged-in user
+#     cart = Cart.objects.get(user=request.user)
+#     cart_products = CartProduct.objects.filter(cart=cart)
+#     total = 0
+    
+#     for cart_product in cart_products:
+#         total += cart_product.product.price * cart_product.quantity
+
+#     cart.total = total
+#     cart.save()    
+
+#     context = {
+#         'cart': cart,
+#         'cart_products': cart_products,
+#     }
+
+#     return render(request, 'home/cart.html', context)
 
 def add_to_cart(request, product_id):
     # Get the quantity from the request (default to 1)
-    quantity = int(request.GET.get('quantity', 1))
+    quantity = 1
     
     if quantity <= 0:
         # Invalid quantity
@@ -104,6 +156,64 @@ def remove_from_cart(request,product_id):
     cart_item.delete()
 
     return redirect('viewcart')
+
+
+def checkout(request):
+
+    if request.method == 'POST':
+        form = CheckoutForm(request.POST)
+
+        if form.is_valid():
+            
+            #getting users then after its cart
+            user = request.user
+            users_cart = Cart.objects.get(user = user)
+
+            #getting items there in the cart
+            cart_products = CartProduct.objects.all().filter(cart = users_cart)
+
+            data = form.cleaned_data
+            order = Orders(city = data['city'], country = data['country'], district = data['district'], user = user, delivery_date = '2025-04-04', order_total = users_cart.total)
+            order.save()
+
+            #inserting products into the order items
+            for cart_product in cart_products:
+                OrderItems.objects.create(order = order ,product = cart_product.product, quantity = cart_product.quantity)
+
+            cart_products.delete()
+            messages.success(request, "Your order has been placed successfully")
+            return redirect('smart-phone')
+
+    return render(request, 'home/checkout.html')    
+
+def view_orders(request,oid):
+    #getting the user instance
+    user = request.user
+
+    #getting the order id of the user
+    orders_details = Orders.objects.all().get(id = oid)
+    #getting the order items that the user ordered
+    order_itmes = OrderItems.objects.all().filter(order__id = oid)
+
+    context = {'orders':order_itmes,'order_details':orders_details}
+
+    return render(request,'home/orderhistory.html',context) 
+
+def number_of_orders(request):
+     #getting the user instance
+    user = request.user
+
+    #getting the order id of the user
+    number_of_orders = Orders.objects.all().filter(user = user).count() + 1
+    orders = Orders.objects.all().filter(user = user)
+
+    return render(request,'home/orders.html',{'number_of_orders':number_of_orders,'orders':orders})
+
+def category_search(request):
+    if request.method == 'GET':
+        categories = Category.objects.all().filter(name__contains = request.GET.get('searchterm'))
+        return render(request,'home/home.html',{'categories':categories})
+
 
 
 

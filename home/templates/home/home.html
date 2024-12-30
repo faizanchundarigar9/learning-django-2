@@ -8,7 +8,6 @@
         {% if user.is_authenticated %}
            <p>Welcome, {{ user.username }}!</p>  
         {% endif %}
-
         {% for category in categories %}
         <div class="col mt-3 mb-3">
             <div class="card" style="width: 18rem;">
@@ -20,6 +19,8 @@
                 </div>
             </div>
         </div>
+        {% empty %}
+        <center><h1>No categories found</h1></center>
         {% endfor %}
     </div>
 </div>

@@ -3,22 +3,6 @@
 {% block content %}
 
 <h1>Products in Your Cart</h1>
-<!-- <ul>
-    {% for cart_product in cart_products %}
-        <li>
-            <img src="{{ cart_product.product.image.url }}" alt="" height="50px", width = "50px">
-            <p>Product Name: {{ cart_product.product }}</p> 
-            <p>Quantity: {{ cart_product.quantity }}</p> 
-            <p>Price: {{ cart_product.product.price }}</p> 
-            <form method = "post" action = "{% url 'removefromcart' cart_product.product.id %}" >
-              {% csrf_token %}
-              <button>Remove from Cart</button>
-            </form>
-        </li>
-    {% empty %}
-        <li>No products in your cart.</li>
-    {% endfor %}
-</ul> -->
 
 <div class="container">
   <div class="row">
@@ -35,11 +19,14 @@
                   <div class="col-sm">
                       <h5 class="fs-14 text-truncate"><a href="#" class="text-body">{{ cart_product.product }}</a></h5>
 
-                      <div class="input-step">
-                          <button type="button" class="minus">-</button>
-                          <input type="number" class="product-quantity" value="1" min="0" max="100">
-                          <button type="button" class="plus">+</button>
-                      </div>
+                      <form method="POST" action="{% url 'viewcart' %}">
+                        {% csrf_token %}
+                        <div class="input-step">
+                            <button type="submit" class="minus" name="product_id" value="{{ cart_product.product.id }}" name="quantity" value="{{ cart_product.quantity|add:-1 }}">-</button>
+                            <input type="number" name="quantity" class="product-quantity" value="{{ cart_product.quantity }}" min="1" max="100">
+                            <button type="submit" class="plus" name="product_id" value="{{ cart_product.product.id }}" name="quantity" value="{{ cart_product.quantity|add:1 }}">+</button>
+                        </div>
+                      </form>
                   </div>
                   <div class="col-sm-auto">
                       <div class="text-lg-end">
@@ -55,8 +42,9 @@
                   <div class="col-sm">
                       <div class="d-flex flex-wrap my-n1">
                           <div>
-                            <form action="{% url 'removefromcart' cart_product.product.id %}" emthod = 'post'>
-                              <button type = 'submit'>Remove</button>
+                            <form action="{% url 'removefromcart' cart_product.product.id %}" method="post">
+                              {% csrf_token %}
+                              <button type="submit">Remove</button>
                             </form>
                           </div>
                           <div>
@@ -68,8 +56,7 @@
                   <div class="col-sm-auto">
                       <div class="d-flex align-items-center gap-2 text-muted">
                           <div>Total :</div>
-                          <h5 class="fs-14 mb-0">₹<span class="product-line-price">{{ cart_product.product.price }}</span>
-                          </h5>
+                          <h5 class="fs-14 mb-0">₹<span class="product-line-price">{{ cart_product.product.price }}</span></h5>
                       </div>
                   </div>
               </div>
@@ -80,7 +67,19 @@
     {% empty %}
     <li>No products in your cart.</li>
     {% endfor %}
+    <section>
+        <form action='{% url "checkout" %}'>
+            <button class="bg-light">
+                Checkout
+            </button>
+        </form>
+    </section>
+    <section>
+        <h3> Total = ₹{{ cart.total }} </h3>
+    </section>
   </div>
 </div>
 
 {% endblock content %}
+
+
