@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<!-- 
 <h1>Products in Your Cart</h1>
 
 <div class="container">
@@ -36,7 +36,6 @@
                   </div>
               </div>
           </div>
-          <!-- card body -->
           <div class="card-footer">
               <div class="row align-items-center gy-3">
                   <div class="col-sm">
@@ -61,7 +60,6 @@
                   </div>
               </div>
           </div>
-        <!-- end card footer -->
       </div>
     </div>
     {% empty %}
@@ -78,7 +76,86 @@
         <h3> Total = ₹{{ cart.total }} </h3>
     </section>
   </div>
-</div>
+</div> -->
+{% load static %}
+<section class="h-100 gradient-custom">
+
+    {% for message in messages %}
+        <div class="container-fluid p-0">
+            <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                <center> {{ message }} </center>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-10 col-xl-8">
+          <div class="card" style="border-radius: 10px;">
+            <div class="card-header px-4 py-5" style="display: flex;">
+              <h5 class=" mb-0">Products in your Cart</h5>
+              <br>
+              <h5 style = "margin-left: 400px;">Total = ₹{{ cart.total }}</h5>
+            </div>
+            <div class="card-body p-4">
+              {% for cart_product in cart_products %}
+              <div class="card shadow-0 border mb-4">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-2">
+                    <a href="#">
+                        <img src="{{cart_product.product.image.url}}"
+                        class="img-fluid" alt="product image">
+                    </a>
+                    </div>
+                    
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-0">{{cart_product.product.name}}</p>
+                    </div>
+                    
+                    <div class="col-md-2 mt-4">
+                        <p class="text-muted mb-0">Quantity</p>
+                        <form method="GET" action="{% url 'quantity_counter' cart_product.id %}">
+                            <div class="input-step">
+                                <button type="submit" name = "status" value = "minus" >-</button>
+                                {{cart_product.quantity}}
+                                <button type="submit" name = "status" value = "plus" >+</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                        <p class="text-muted mb-0 small">Price Per Unit : <b>{{cart_product.product.price}}</b></p>
+                    </div>
+
+                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                        <p class="text-muted mb-0 small">Net Amount : <b>{{cart_product.net_amount}}</b></p>
+                    </div>
+                    <div class="d-flex justify-content-center " style = "margin-left: 370px;">
+                        <a href = "{% url 'removefromcart' cart_product.product.id %}"> <img src="{% static 'home/images/delete.png' %}" alt="" height="25px" width="25px"> </a>
+                    </div>
+                  </div>
+                  <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;"> -->
+                </div>
+              </div>  
+              
+              {% empty %}
+              <h3>Your Cart is empty</h3>
+              {% endfor %} 
+              {% if cart_products%}
+               <section>
+                <form action='{% url "checkout" %}'>
+                    <button class="bg-light">
+                        Checkout
+                    </button>
+                </form>
+               </section>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
 
 {% endblock content %}
 

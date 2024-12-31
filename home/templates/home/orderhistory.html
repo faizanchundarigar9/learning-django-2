@@ -26,19 +26,16 @@
                     </a>
                     </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0">{{order.product.name}}</p>
+                      <p class="text-muted mb-0"><b>{{order.product.name}}</b></p>
                     </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">White</p>
+                      <p class="text-muted mb-0 small">Quantity : <b>{{order.quantity}}</b></p>
                     </div>
-                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">Capacity: 64GB</p>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-0 small">Price Per Unit : <b>{{order.product.price}}</b></p>
                     </div>
-                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">Qty: 1</p>
-                    </div>
-                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">{{order.product.price}}</p>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-0 small">Net Amount: <b>{{order.net_amount}}</b></p>
                     </div>
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;"> -->
@@ -90,6 +87,7 @@
               <div class="d-flex justify-content-between">
                 <p class="text-muted mb-0">City : {{order_details.city}}</p>
               </div>
+
               <br>
               <p class="fw-bold mb-0">Expected date of delivery : {{order_details.delivery_date}} </p>
 

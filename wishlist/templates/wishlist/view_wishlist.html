@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
+{% load static %}
 <section class="h-100 gradient-custom">
 
     {% for message in messages %}
@@ -11,38 +10,36 @@
             </div>
         </div>
     {% endfor %}
-    {% load static %}
+
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-lg-10 col-xl-8">
           <div class="card" style="border-radius: 10px;">
-            <div class="card-header px-4 py-5" style="display: flex;">
-              <h5 class=" mb-0">Order History</h5>
-              <h5 style = "margin-left: 470px;">Number of orders : {{number_of_orders}}</h5>
+            <div class="card-header px-4 py-5">
+              <h5 class="text-muted mb-0">Products in your Wishlist</h5>
             </div>
             <div class="card-body p-4">
-              {% for order in orders %}
+              {% for wishlist_product in wishlist_items %}
               <div class="card shadow-0 border mb-4">
                 <div class="card-body">
                   <div class="row">
+                    <div class="col-md-2">
+                    <a href="#">
+                        <img src="{{wishlist_product.product.image.url}}"
+                        class="img-fluid" alt="Phone">
+                    </a>
+                    </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0">Order Id : {{order.id}}</p>
+                      <p class="text-muted mb-0">{{wishlist_product.product.name}}</p>
                     </div>
-
                     <div class="col-md-5 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">Country : {{order.country}}</p>
+                      <p class="text-muted mb-0 small">{{wishlist_product.product.description}}</p>
                     </div>
-
-                    <div class="col-md-5 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">City : {{order.city}}</p>
-                    </div>  
-
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Total : <b>{{order.order_total}}</b></p>
+                      <p class="text-muted mb-0 small">Price : <b>{{wishlist_product.product.price}}</b></p>
                     </div>
-
-                    <div class="col-md-10 text-center d-flex justify-content-center align-items-center" style = "margin-left:350px;">
-                        <a href="{% url 'orders' order.id %}" style = "text-decoration: none;"><img src="{% static 'home/images/views.jpg' %}" height="30px" width = "30px" ></a>
+                    <div class="d-flex justify-content-center " style = "margin-left: 370px;">
+                        <a href = "{% url 'remove_from_wishlist' wishlist_product.id %}"> <img src="{% static 'wishlist/delete.png' %}" alt="" height="25px" width="25px"> </a>
                     </div>
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;"> -->
@@ -50,12 +47,15 @@
               </div>  
               
               {% empty %}
-              <h3>You did not ordered any items yet</h3>
+              <h3>Your wishlist is empty</h3>
 
               {% endfor %} 
           </div>
         </div>
       </div>
     </div>
-</section>
+  </section>
+
 {% endblock content %}
+
+

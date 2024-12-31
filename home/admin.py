@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Product, Reviews, Category, Cart, CartProduct, Orders, OrderItems
+from .models import Product, Reviews, Category, Orders, OrderItems, Cart, CartProduct
 
 admin.site.register(Reviews)
-admin.site.register(CartProduct)
+
 
 class CustomOrders(admin.ModelAdmin):
     list_display = ('id','user', 'order_total', 'country', 'city', 'district', 'address', 'order_date', 'delivery_date')
@@ -21,3 +21,5 @@ admin.site.register(Product,CustomProducts)
 admin.site.register(Orders,CustomOrders)
 admin.site.register(OrderItems,CustomOrderItems)
 admin.site.register(Cart)
+admin.site.register(CartProduct)
+
