@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Colorlib Templates">
+    <meta name="author" content="Colorlib">
+    <meta name="keywords" content="Colorlib Templates">
+
+    <!-- Title Page-->
+    <title>Registration Form</title>
+
+    <!-- Icons font CSS-->
+    <link href="{% static 'vendor/mdi-font/css/material-design-iconic-font.min.css' %}" rel="stylesheet" media="all">
+    <link href="{% static 'vendor/font-awesome-4.7/css/font-awesome.min.css' %}" rel="stylesheet" media="all">
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Vendor CSS-->
+    <link href="{% static 'home/vendor2/select2/select2.min.css' %}" rel="stylesheet" media="all">
+    <link href="{% static 'home/vendor2/datepicker/daterangepicker.css' %}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="{% static 'home/css/registration.css' %}" rel="stylesheet" media="all">
+</head>
+
+<body>
+    <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+        <div class="wrapper wrapper--w680">
+            <div class="card card-4">
+                {% for message in messages %}
+            <div class="container-fluid p-0" style = "color: red;font-size: large;">
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                    <center> {{ message }} </center>
+                </div>
+            </div>
+            {% endfor%}
+                <div class="card-body">
+                    <h2 class="title">Registration Form</h2>
+                    <form id="registrationForm" method="POST">
+                        {% csrf_token %}
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">First Name</label>
+                                    <input class="input--style-4" type="text" name="first_name" id="first_name">
+                                    <span class="error" id="first_name_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Last Name</label>
+                                    <input class="input--style-4" type="text" name="last_name" id="last_name">
+                                    <span class="error" id="last_name_error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Birthday</label>
+                                    <div class="input-group-icon">
+                                        <input class="input--style-4 js-datepicker" type="text" name="birthday" id="birthday">
+                                        <i class="zmdi zmdi-calendar-note input-icon js-btn-calendar"></i>
+                                        <span class="error" id="birthday_error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Gender</label>
+                                    <div class="p-t-10">
+                                        <label class="radio-container m-r-45">Male
+                                            <input type="radio" name="gender" value="male" required>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="radio-container">Female
+                                            <input type="radio" name="gender" value="female" required>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <span class="error" id="gender_error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Email</label>
+                                    <input class="input--style-4" type="email" name="email" id="email">
+                                    <span class="error" id="email_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Phone Number</label>
+                                    <input class="input--style-4" type="text" name="phone" id="phone">
+                                    <span class="error" id="phone_error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Password</label>
+                                    <input class="input--style-4" type="password" name="password" id="password">
+                                    <span class="error" id="password_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Repeat Password</label>
+                                    <input class="input--style-4" type="password" name="repeat_password" id="repeat_password">
+                                    <span class="error" id="repeat_password_error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-t-15">
+                            <button class="btn btn--radius-2 btn--blue" type="submit">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery JS-->
+    <script src="{% static 'home/vendor2/jquery/jquery.min.js' %}"></script>
+    <!-- Vendor JS-->
+    <script src="{% static 'home/vendor2/select2/select2.min.js' %}"></script>
+    <script src="{% static 'home/vendor2/datepicker/moment.min.js' %}"></script>
+    <script src="{% static 'home/vendor2/datepicker/daterangepicker.js' %}"></script>
+
+    <!-- Main JS-->
+    <script src="{% static 'home/js/global.js' %}"></script>
+
+    <!-- Validation Script -->
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            let valid = true;
+
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(function(errorElement) {
+                errorElement.textContent = '';
+            });
+
+            // First Name validation
+            const firstName = document.getElementById('first_name').value;
+            if (!firstName.match(/^[A-Za-z]{2,30}$/)) {
+                valid = false;
+                document.getElementById('first_name_error').textContent = 'First name should contain only letters and be between 2 to 30 characters.';
+            }
+
+            // Last Name validation
+            const lastName = document.getElementById('last_name').value;
+            if (!lastName.match(/^[A-Za-z]{2,30}$/)) {
+                valid = false;
+                document.getElementById('last_name_error').textContent = 'Last name should contain only letters and be between 2 to 30 characters.';
+            }
+
+            // Birthday validation
+            const birthday = document.getElementById('birthday').value;
+            if (!birthday.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                valid = false;
+                document.getElementById('birthday_error').textContent = 'Birthday should be in the format DD/MM/YYYY.';
+            }
+
+            // Gender validation
+            if (!document.querySelector('input[name="gender"]:checked')) {
+                valid = false;
+                document.getElementById('gender_error').textContent = 'Please select a gender.';
+            }
+
+            // Email validation
+            const email = document.getElementById('email').value;
+            if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
+                valid = false;
+                document.getElementById('email_error').textContent = 'Please enter a valid email address.';
+            }
+
+            // Phone Number validation
+            const phone = document.getElementById('phone').value;
+            if (!phone.match(/^\d{10}$/)) {
+                valid = false;
+                document.getElementById('phone_error').textContent = 'Phone number should be 10 digits.';
+            }
+
+            // Password validation
+            const password = document.getElementById('password').value;
+            const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+            if (!password.match(passwordPattern)) {
+                valid = false;
+                document.getElementById('password_error').textContent = 'Password must be at least 8 characters long and contain at least one uppercase letter, one digit, and one special character.';
+            }
+
+            // Repeat Password validation
+            const repeatPassword = document.getElementById('repeat_password').value;
+            if (password !== repeatPassword) {
+                valid = false;
+                document.getElementById('repeat_password_error').textContent = 'Passwords do not match.';
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+</html>

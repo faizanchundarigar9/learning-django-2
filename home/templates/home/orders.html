@@ -18,7 +18,9 @@
           <div class="card" style="border-radius: 10px;">
             <div class="card-header px-4 py-5" style="display: flex;">
               <h5 class=" mb-0">Order History</h5>
+              {% if number_of_orders != 0 %}
               <h5 style = "margin-left: 470px;">Number of orders : {{number_of_orders}}</h5>
+              {% endif %}
             </div>
             <div class="card-body p-4">
               {% for order in orders %}

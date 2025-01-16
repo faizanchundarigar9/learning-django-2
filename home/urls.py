@@ -18,6 +18,7 @@ urlpatterns = [
     path('orders/',home_views.number_of_orders,name = 'number_of_orders'),
     path('orders/<int:oid>/',home_views.view_orders,name = 'orders'),
     path('wishlist/',include('wishlist.urls'),name = 'view_wishlist'),
-    path('wishlist/<int:pid>/',include('wishlist.urls'),name = 'add_to_wishlist')
+    path('wishlist/<int:pid>/',include('wishlist.urls'),name = 'add_to_wishlist'),
+    path('profile/',views.view_profile,name = "view_profile")
     # path('categories/<int:cid>/products.search_result, name='search_result')
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

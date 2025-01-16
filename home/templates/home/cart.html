@@ -95,7 +95,9 @@
             <div class="card-header px-4 py-5" style="display: flex;">
               <h5 class=" mb-0">Products in your Cart</h5>
               <br>
-              <h5 style = "margin-left: 400px;">Total = ₹{{ cart.total }}</h5>
+              {% if cart.total != 0 %}
+              <h5 style = "margin-left: 400px;">Total : ₹{{ cart.total }}</h5>
+              {% endif %}
             </div>
             <div class="card-body p-4">
               {% for cart_product in cart_products %}

@@ -58,7 +58,7 @@ class Orders(models.Model):
     country = models.CharField(max_length = 30)
     city = models.CharField(max_length = 30)
     district = models.CharField(max_length = 30)
-    address = models.TextField()
+    address = models.CharField(max_length = 50)
     order_date = models.DateTimeField(auto_now_add = True)
     delivery_date = models.DateField()
 
@@ -74,6 +74,20 @@ class OrderItems(models.Model):
 
     def __str__(self):
         return f"order id = {self.order.id} items"
+    
+
+class Profile(models.Model):
+    user = models.OneToOneField(User , on_delete = models.CASCADE)
+    profile_picture = models.ImageField(upload_to = 'user-profile-pictures', default = '/profile.jpg')
+    contact_number = models.CharField(max_length = 20, default = '')
+    birth_date = models.DateField(null = True )
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+
+
+
 
         
 

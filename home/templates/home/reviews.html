@@ -9,11 +9,12 @@
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                   <h5 class="card-title">{{review.name}}</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
                   <p class="card-text">{{review.review}}</p>
                 </div>
               </div>
         </div>
+        {% empty %}
+        <h3>No reveiews available</h3>
         {% endfor %}
     </div>
 </div>

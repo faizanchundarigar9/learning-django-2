@@ -8,7 +8,15 @@ from django.shortcuts import HttpResponse
 from .models import Orders, OrderItems
 from django.contrib import messages
 from .models import Cart, CartProduct 
+from .models import Profile
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from datetime import datetime
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def home_view(request):
     categories = Category.objects.all()
     return render(request,'home/home.html',{'categories':categories})
@@ -53,7 +61,6 @@ def login_view(request):
             return render(request,'home/index.html', {'error': 'Invalid credentials.'})
 
     else:
-        print("GET request received")
         return render(request, 'home/index.html')  
 
 def cart_view(request):
@@ -94,8 +101,8 @@ def quantity_counter(request,cpid):
                 product.quantity += 1
                 product.save()
 
-                product.product.stock -= 1
-                product.product.save()
+                # product.product.stock -= 1
+                # product.product.save()
 
                 product.net_amount = product.quantity * product.product.price 
                 product.save()
@@ -109,8 +116,8 @@ def quantity_counter(request,cpid):
                 product.quantity -= 1
                 product.save()
 
-                product.product.stock += 1
-                product.product.save()
+                # product.product.stock += 1
+                # product.product.save()
 
                 product.net_amount = product.quantity * product.product.price 
                 product.save()
@@ -139,14 +146,14 @@ def add_to_cart(request, product_id):
         cart_product.quantity = quantity
         cart_product.save()
 
-        cart_product.product.stock -= 1
-        cart_product.product.save() 
+        # cart_product.product.stock -= 1
+        # cart_product.product.save() 
     else:
         cart_product.quantity += quantity
         cart_product.save()
 
-        cart_product.product.stock -= 1
-        cart_product.product.save() 
+        # cart_product.product.stock -= 1
+        # cart_product.product.save() 
 
     return redirect('viewcart')
 
@@ -176,11 +183,13 @@ def checkout(request):
             cart_products = CartProduct.objects.all().filter(cart = users_cart)
 
             data = form.cleaned_data
-            order = Orders(city = data['city'], country = data['country'], district = data['district'], user = user, delivery_date = '2025-04-04', order_total = users_cart.total)
+            order = Orders(city = data['city'], country = data['country'], district = data['district'], user = user, delivery_date = '2025-04-04', order_total = users_cart.total, address = data['address'])
             order.save()
 
             #inserting products into the order items
             for cart_product in cart_products:
+                cart_product.product.stock -= cart_product.quantity
+                cart_product.product.save()
                 OrderItems.objects.create(order = order ,product = cart_product.product, quantity = cart_product.quantity, net_amount = cart_product.net_amount)
 
             cart_products.delete()
@@ -218,9 +227,44 @@ def category_search(request):
         categories = Category.objects.all().filter(name__contains = request.GET.get('searchterm'))
         return render(request,'home/home.html',{'categories':categories})
 
+def view_profile(request):
+    user_details, created = Profile.objects.get_or_create(user = request.user)
+    return render(request,'home/profile.html',{'user_details':user_details})
 
+def create_account(request):
+    if request.method == 'POST':
+        username = request.POST.get('first_name') + request.POST.get('last_name')
+        if User.objects.all().filter(username = username).exists():
+            messages.warning(request,"User already exists with this username")
+            return redirect('create_account')
+        
+        if User.objects.all().filter(email = request.POST.get('email')).exists() and Profile.objects.all().filter(contact_number = request.POST.get('phone')).exists():
+            messages.warning(request,"User already exists with this mobile number and email")
+            return redirect('create_account')
+        
+        if User.objects.all().filter(email = request.POST.get('email')).exists():
+            messages.warning(request,"User already exists with this email")
+            return redirect('create_account')
+        
+        if Profile.objects.all().filter(contact_number = request.POST.get('phone')).exists():
+            messages.warning(request,"Mobile number is already used and having account")
+            return redirect('create_account')
+        else:
 
+            birth_date = datetime.strptime(request.POST.get('birthday'), '%d/%m/%Y').strftime('%Y-%m-%d')
 
+            user = User.objects.create(username = request.POST.get('first_name') + request.POST.get('last_name'),first_name = request.POST.get('first_name'),last_name = request.POST.get('last_name'), email = request.POST.get('email'), password = make_password(request.POST.get('password')))
+
+            user_profile = Profile.objects.create(user = user, birth_date = birth_date,contact_number = request.POST.get('phone'))
+            return render(request,'home/index.html',{"error":f"your username will be : {username}",'status':True})
+    
+    else:
+        return render(request,'home/registration.html')
+    
+
+def custom_logout(request):
+    logout(request)
+    return redirect('login') 
 
 
  

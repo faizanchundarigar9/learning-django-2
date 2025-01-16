@@ -4,6 +4,15 @@ from django.shortcuts import redirect
 from home.models import Product
 from django.contrib import messages
 
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import WishlistItem
+from .serializers import WishlistItemSerializer
+
+
 def view_wishlist(request):
     
     wishlist, created = Wishlist.objects.get_or_create(user = request.user)
@@ -32,5 +41,13 @@ def add_to_wishlist(request,pid):
 
     return redirect('view_wishlist')
 
+# API view to fetch wishlist items for the logged-in user
+# @api_view(['GET'])
+# def get_wishlist_items(request):
+#     if request.user.is_authenticated:
+#         wishlist_items = WishlistItem.objects.filter(wishlist__user=request.user)
+#         serializer = WishlistItemSerializer(wishlist_items, many=True)
+#         return Response(serializer.data)
+#     return Response({"detail": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
 

@@ -12,8 +12,10 @@
              <br>
              <h5>{{product.detail_description}}</h5>
              <hr>
-             <a href="{% url 'product_details' product.id %}" class="btn btn-primary">Buy Now</a>
+             {% if product.stock != 0 %}
+             <a href="{% url 'add_to_cart'  product.id%}" class="btn btn-primary">Buy Now</a>
              <a href="{% url 'add_to_cart'  product.id%}" class="btn btn-primary">Add to Cart</a>
+             {% endif %}
              <a href=" {% url  'product_reviews' product.id %}" class="btn btn-primary" >Reviews</a>
              <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-primary">Add to Wishlist</a>
         </div>

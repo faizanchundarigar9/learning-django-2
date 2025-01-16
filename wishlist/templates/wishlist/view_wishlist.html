@@ -42,8 +42,8 @@
                         <a href = "{% url 'remove_from_wishlist' wishlist_product.id %}"> <img src="{% static 'wishlist/delete.png' %}" alt="" height="25px" width="25px"> </a>
                     </div>
                   </div>
-                  <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;"> -->
                 </div>
+                <div id="wishlist-container"></div>
               </div>  
               
               {% empty %}
@@ -55,7 +55,6 @@
       </div>
     </div>
   </section>
-
 {% endblock content %}
 
 

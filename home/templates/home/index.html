@@ -36,9 +36,13 @@
 					<span class="login100-form-title">
 						Member Login
 					</span>
-					
-					{% if error %}
+
+					{% if error == "Invalid credentials." %}
                     <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+
+					{% if status %}
+                    <div class="alert alert-success">{{ error }}</div>
                     {% endif %}
 
 					<div class="wrap-input100 validate-input">
@@ -73,7 +77,7 @@
 					</div>
 
 					<div class="text-center p-t-136">
-						<a class="txt2" href="#">
+						<a class="txt2" href="{% url 'create_account'%}">
 							Create your Account
 							<i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
 						</a>
@@ -82,26 +86,6 @@
 			</div>
 		</div>
 	</div>
-	
-	
-
-	
-<!--===============================================================================================-->	
-	<!-- <script src="{% static 'home/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
-<!--===============================================================================================-->
-	<!-- <script src="{% static 'home/vendor/bootstrap/js/popper.js' %}"></script>
-	<script src="{% static 'home/vendor/bootstrap/js/bootstrap.min.js' %}"></script> -->
-<!--===============================================================================================-->
-	<!-- <script src="{% static 'home/vendor/select2/select2.min.js' %}"></script> -->
-<!--===============================================================================================-->
-	<!-- <script src="{% static 'home/vendor/tilt/tilt.jquery.min.js' %}"></script>
-	<script >
-		$('.js-tilt').tilt({
-			scale: 1.1
-		})
-	</script> -->
-<!--===============================================================================================-->
-	<!-- <script src="{% static 'js/main.js' %}"></script> --> -->
 
 </body>
 </html>
