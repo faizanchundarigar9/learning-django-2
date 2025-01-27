@@ -78,7 +78,8 @@
   </div>
 </div> -->
 {% load static %}
-<section class="h-100 gradient-custom">
+{% load humanize %}
+<section class="h-100 gradient-custom mt-5">
 
     {% for message in messages %}
         <div class="container-fluid p-0">
@@ -96,7 +97,7 @@
               <h5 class=" mb-0">Products in your Cart</h5>
               <br>
               {% if cart.total != 0 %}
-              <h5 style = "margin-left: 400px;">Total : ₹{{ cart.total }}</h5>
+              <h5 style = "margin-left: 400px;">Total : ₹{{ cart.total|intcomma }}</h5>
               {% endif %}
             </div>
             <div class="card-body p-4">
@@ -105,7 +106,7 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-2">
-                    <a href="#">
+                    <a href="{% url 'product_details' cart_product.product.id %}">
                         <img src="{{cart_product.product.image.url}}"
                         class="img-fluid" alt="product image">
                     </a>
@@ -127,11 +128,11 @@
                     </div>
 
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Price Per Unit : <b>{{cart_product.product.price}}</b></p>
+                        <p class="text-muted mb-0 small">Price Per Unit : <b>₹{{cart_product.product.price|intcomma}}</b></p>
                     </div>
 
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Net Amount : <b>{{cart_product.net_amount}}</b></p>
+                        <p class="text-muted mb-0 small">Net Amount : <b>₹{{cart_product.net_amount|intcomma}}</b></p>
                     </div>
                     <div class="d-flex justify-content-center " style = "margin-left: 370px;">
                         <a href = "{% url 'removefromcart' cart_product.product.id %}"> <img src="{% static 'home/images/delete.png' %}" alt="" height="25px" width="25px"> </a>

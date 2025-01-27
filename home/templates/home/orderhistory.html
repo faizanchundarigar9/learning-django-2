@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load humanize %}
 
-<section class="h-100 gradient-custom">
+<section class="h-100 gradient-custom mt-5">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-lg-10 col-xl-8">
@@ -29,13 +30,13 @@
                       <p class="text-muted mb-0"><b>{{order.product.name}}</b></p>
                     </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">Quantity : <b>{{order.quantity}}</b></p>
+                      <p class="text-muted mb-0 small">Qty : <b>{{order.quantity}} units</b></p>
                     </div>
                     <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">Price Per Unit : <b>{{order.product.price}}</b></p>
+                      <p class="text-muted mb-0 small">Price Per Unit : <b>₹{{order.product.price|intcomma}}</b></p>
                     </div>
                     <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small">Net Amount: <b>{{order.net_amount}}</b></p>
+                      <p class="text-muted mb-0 small">Net Amount: <b>₹{{order.net_amount|intcomma}}</b></p>
                     </div>
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;"> -->
@@ -101,7 +102,7 @@
             <div class="card-footer border-0 px-4 py-5"
               style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
-                paid: <span class="h2 mb-0 ms-2"> ₹{{order_details.order_total}}</span></h5>
+                paid: <span class="h2 mb-0 ms-2"> ₹{{order_details.order_total|intcomma}}</span></h5>
             </div>
           </div>
         </div>

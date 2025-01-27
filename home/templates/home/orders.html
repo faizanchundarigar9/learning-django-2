@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<section class="h-100 gradient-custom">
+<section class="h-100 gradient-custom mt-5">
 
     {% for message in messages %}
         <div class="container-fluid p-0">
@@ -12,6 +12,7 @@
         </div>
     {% endfor %}
     {% load static %}
+    {% load humanize %}
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-lg-10 col-xl-8">
@@ -31,19 +32,19 @@
                       <p class="text-muted mb-0">Order Id : {{order.id}}</p>
                     </div>
 
-                    <div class="col-md-5 text-center d-flex justify-content-center align-items-center">
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
                       <p class="text-muted mb-0 small">Country : {{order.country}}</p>
                     </div>
 
-                    <div class="col-md-5 text-center d-flex justify-content-center align-items-center">
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
                         <p class="text-muted mb-0 small">City : {{order.city}}</p>
                     </div>  
 
-                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Total : <b>{{order.order_total}}</b></p>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                        <p class="text-muted mb-0 small">Total : <b>₹{{order.order_total|intcomma}}</b></p>
                     </div>
 
-                    <div class="col-md-10 text-center d-flex justify-content-center align-items-center" style = "margin-left:350px;">
+                    <div class="col-md-1 text-center d-flex justify-content-center align-items-center">
                         <a href="{% url 'orders' order.id %}" style = "text-decoration: none;"><img src="{% static 'home/images/views.jpg' %}" height="30px" width = "30px" ></a>
                     </div>
                   </div>

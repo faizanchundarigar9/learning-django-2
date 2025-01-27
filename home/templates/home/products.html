@@ -1,32 +1,35 @@
 {%extends 'base.html' %}
 {% load static%}
-
+{% load humanize %}
 {% block content %}
-<div class="container">
+<div class="container mt-5">
     <div class="row">
         {% for product in products %}
-        <div class="col mt-3 mb-3">
+        <div class="col-md-3 mt-3 mb-3">
             <div class="card" style="width: 18rem;">
                 <a href="{% url 'product_details' product.id %}"><img class="card-img-top" src="{{product.image.url}}" alt="Card image cap"></a>
                 <div class="card-body">
                     <h5 class="card-title">{{product.name}}</h5>
                     <p class="card-text">{{product.description}}</p>
-
-                    {% if product.stock > 0 and product.stock < 10 %}
-                    <p style="color: red;">only few left in stock</p>
+                    
+                    {% if product.stock >= 1 and product.stock <= 10 %}
+                    <p style="color:red">only few units left</p>
                     {% endif %}
 
+                    {% if product.stock != 0 and product.stock > 10 %}
+                    <p style="color: rgb(15, 7, 254);">in stock</p>
+                    {% endif %}
+                    
                     {% if product.stock == 0 %}
-                    <p style="color: red;">out of stock</p>
+                    <p style="color:red">out of stock</p>
                     {% endif %}
 
-                    <h5>Price : {{product.price}}/-</h5>
+                    <h5>Price : ₹{{product.price|intcomma}}</h5>
                     {% if product.stock != 0 %}
                     <a href="{% url 'add_to_cart'  product.id%}" class="btn btn-primary">Buy Now</a>
                     <a href="{% url 'add_to_cart'  product.id%}" class="btn btn-primary">Add to Cart</a>
                     {% endif %}
-                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-primary">Add to Wishlist</a>
-                    <a href="{% url  'product_reviews' product.id %}" class="btn btn-primary" style = "margin-top: 10px;">Reviews</a>
+                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-primary mt-2">Add to Wishlist</a>
                 </div>
             </div>
         </div>

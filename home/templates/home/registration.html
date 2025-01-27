@@ -61,7 +61,7 @@
                         <div class="row row-space">
                             <div class="col-2">
                                 <div class="input-group">
-                                    <label class="label">Birthday</label>
+                                    <label class="label">Birthdate</label>
                                     <div class="input-group-icon">
                                         <input class="input--style-4 js-datepicker" type="text" name="birthday" id="birthday">
                                         <i class="zmdi zmdi-calendar-note input-icon js-btn-calendar"></i>
@@ -112,7 +112,7 @@
                             </div>
                             <div class="col-2">
                                 <div class="input-group">
-                                    <label class="label">Repeat Password</label>
+                                    <label class="label">Confirm Password</label>
                                     <input class="input--style-4" type="password" name="repeat_password" id="repeat_password">
                                     <span class="error" id="repeat_password_error"></span>
                                 </div>
@@ -122,6 +122,7 @@
                             <button class="btn btn--radius-2 btn--blue" type="submit">Register</button>
                         </div>
                     </form>
+                    <a href="{% url 'login'%}" style="margin-left: 510px;font-size: medium;text-decoration: none;">Login</a>
                 </div>
             </div>
         </div>
@@ -161,12 +162,33 @@
                 document.getElementById('last_name_error').textContent = 'Last name should contain only letters and be between 2 to 30 characters.';
             }
 
+            // // Birthday validation
+            // const birthday = document.getElementById('birthday').value;
+            // if (!birthday.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            //     valid = false;
+            //     document.getElementById('birthday_error').textContent = 'Birthday should be in the format DD/MM/YYYY.';
+            // }
+
             // Birthday validation
-            const birthday = document.getElementById('birthday').value;
-            if (!birthday.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-                valid = false;
-                document.getElementById('birthday_error').textContent = 'Birthday should be in the format DD/MM/YYYY.';
-            }
+    const birthday = document.getElementById('birthday').value;
+    const birthdayRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    if (!birthday.match(birthdayRegex)) {
+        valid = false;
+        document.getElementById('birthday_error').textContent = 'Birthday should be in the format DD/MM/YYYY.';
+    } else {
+        const today = new Date();
+        const birthDate = new Date(birthday.split('/').reverse().join('-')); // Convert DD/MM/YYYY to YYYY-MM-DD for Date object
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--; // Adjust age if the current date is before the birthday this year
+        }
+
+        if (age < 18) {
+            valid = false;
+            document.getElementById('birthday_error').textContent = 'You must be at least 18 years old to register.';
+        }
+    }
 
             // Gender validation
             if (!document.querySelector('input[name="gender"]:checked')) {

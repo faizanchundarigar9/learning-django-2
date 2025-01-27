@@ -21,6 +21,7 @@ from django.conf import settings
 from . import views as home_page_view
 from home import views as hview
 from django.contrib.auth import views as auth_views
+from home.views import LoginAPI
 
 
 urlpatterns = [
@@ -28,5 +29,6 @@ urlpatterns = [
     path('home/', include('home.urls')),
     path('',hview.login_view, name = 'login'),
     path('createaccount/',hview.create_account, name = 'create_account'),
-    path('logout/',hview.custom_logout,name = 'logout')
+    path('logout/',hview.custom_logout,name = 'logout'),
+    path('api/login/',LoginAPI.as_view(), name = 'login api')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

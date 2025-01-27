@@ -25,6 +25,7 @@ def remove_product_from_wishlist(request,wishlist_item_id):
     wishlist_product = WishlistItem.objects.get(id = wishlist_item_id)
     wishlist_product.delete()
 
+    messages.warning(request,"Product removed from wishlist ☹️") 
     return redirect('view_wishlist')
 
 def add_to_wishlist(request,pid):
@@ -35,11 +36,13 @@ def add_to_wishlist(request,pid):
     wishlist_product,created  = WishlistItem.objects.get_or_create(wishlist = users_wish_list, product = product_added)
 
     if created:
+        messages.warning(request, "Product added to wishlist 🤩")
         wishlist_product.save()
+    
     else:
-        messages.warning(request, "Product is already in your wishlist")
-
-    return redirect('view_wishlist')
+        messages.warning(request, "Product is already in your wishlist 🤩")
+    
+    return redirect('smart-phone')
 
 # API view to fetch wishlist items for the logged-in user
 # @api_view(['GET'])

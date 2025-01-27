@@ -14,7 +14,90 @@ from django.contrib.auth.hashers import make_password
 from datetime import datetime
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
+from home.serializer import CategorySerializer, ProductSerializer, CartSerializer, LoginSerizlier, OrderSerializer, OrderItemsSerializer
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
 
+class CategoryOperations(APIView):
+    def get(self, request):
+        query_set = Category.objects.all()
+        print(query_set)
+        serialized_data = CategorySerializer(query_set, many = True)
+        
+        return Response({"message":"Success","data":serialized_data.data})
+    
+class ProductByCategory(APIView):
+    def get(self, request, cid):
+        products = Product.objects.all().filter(category_id = cid)
+        serialized_data = ProductSerializer(products, many = True)
+
+        return Response({"message":"success","data":serialized_data.data})
+    
+class ProductDetail(APIView):
+    def get(self, request, pid):
+        try:
+            product = Product.objects.get(id = pid)
+            print(product)
+            serialized_data = ProductSerializer(product)
+            return Response({"message":"product details found","data":serialized_data.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message":"product details not found"},status=status.HTTP_404_NOT_FOUND)
+
+class CartView(APIView):
+    def get(self, request):
+        cart,created = Cart.objects.get_or_create(user = request.user)  
+        cart_products = CartProduct.objects.all().filter(cart = cart)
+    
+        # total = 0        
+       
+        for cart_product in cart_products:
+            total += cart_product.product.price * cart_product.quantity
+            net_amount = cart_product.product.price * cart_product.quantity
+            cart_product.net_amount = net_amount
+            cart_product.save()
+
+        cart.total = total
+        cart.save()
+
+        serialized_data = CartSerializer(cart)
+        return Response({"message":"cart details found","data":serialized_data.data},status = status.HTTP_200_OK)
+
+class LoginAPI(APIView):
+    def post(self,request):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        deserialized_data = LoginSerizlier(data = request.data)
+        if not deserialized_data.is_valid():
+            return Response({"errors":deserialized_data.errors})
+        
+        user = authenticate(username = deserialized_data.data['email'], password = deserialized_data.data['password'])
+        if user is not None:
+            return Response(status=status.HTTP_302_FOUND)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+class ViewOrders(APIView):
+    def get(self, reuqest, oid):
+        orders_details = Orders.objects.all().get(id = oid)
+        serialized_data = OrderSerializer(orders_details)
+
+        return Response({"message":"order details found","data":serialized_data.data},status=status.HTTP_302_FOUND)
+        # order_itmes = OrderItems.objects.all().filter(order__id = oid)
+
+class ViewOrderDetails(APIView):
+    def get(self, request, oid):
+        try:
+            order_itmes = OrderItems.objects.all().filter(order__id = oid)
+            serialized_data = OrderItemsSerializer(order_itmes, many = True)
+            return Response({"message":"orderdetails found","data":serialized_data.data},status=status.HTTP_302_FOUND)
+        except Exception as e:
+            return Response({"message":"no order details found"},status=status.HTTP_404_NOT_FOUND)
+
+class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 @login_required
 def home_view(request):
@@ -24,12 +107,6 @@ def home_view(request):
 def view_products_by_category(request,cid):
     products = Product.objects.all().filter(category_id = cid)
     return render(request, 'home/products.html', {'products':products})
-
-def reviews(request,pid):
-    
-    product = Product.objects.get(id = pid)
-    reviews = Reviews.objects.filter(phone=product)
-    return render(request, 'home/reviews.html',{'reveiws':reviews})
 
 def details(request,pid):
 
@@ -46,12 +123,12 @@ def login_view(request):
 
     if request.method == 'POST':
         # print("post request received")
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
 
         # print(f"Username: {username}, Password: {password}")
 
-        user = authenticate(username = username, password = password)
+        user = authenticate(username = email, password = password)
 
         if user is not None:
             login(request, user)
@@ -67,7 +144,7 @@ def cart_view(request):
     
     cart,created = Cart.objects.get_or_create(user = request.user)  
     cart_products = CartProduct.objects.all().filter(cart = cart)
-
+    
     total = 0        
     for cart_product in cart_products:
         total += cart_product.product.price * cart_product.quantity
@@ -93,38 +170,32 @@ def quantity_counter(request,cpid):
         product = CartProduct.objects.get(id = cpid) 
 
         if status == 'plus':
-            
-            if product.product.stock == 0:
-                messages.warning(request,"out of stock")
-
-            if product.product.stock != 0:
+            if product.quantity < product.product.stock:
+                
                 product.quantity += 1
                 product.save()
 
-                # product.product.stock -= 1
-                # product.product.save()
-
                 product.net_amount = product.quantity * product.product.price 
                 product.save()
 
-                return redirect('viewcart')
+                return redirect("viewcart")
+
             else:
-                return redirect('viewcart')
-        
+                messages.warning(request,f"Sorry, only {product.product.stock} units are left in stock ☹️☹️☹️. You already have {product.product.stock} units in your cart.")
+                return redirect('viewcart') 
+
         elif status == 'minus':
-            if product.quantity != 1:
+            if product.quantity == 1:
+                remove_from_cart(request,product.product.id)
+                return redirect('smart-phone')
+            else:
                 product.quantity -= 1
                 product.save()
-
-                # product.product.stock += 1
-                # product.product.save()
-
                 product.net_amount = product.quantity * product.product.price 
                 product.save()
-
-            return redirect('viewcart')
-    else:
-        return redirect('viewcart')    
+                return redirect("viewcart")
+        else:
+            return redirect('viewcart')                 
 
 def add_to_cart(request, product_id):
     quantity = 1
@@ -132,11 +203,7 @@ def add_to_cart(request, product_id):
     if quantity <= 0:
         return redirect('product_list')
 
-    try:
-        product = Product.objects.get(id=product_id)
-        
-    except Product.DoesNotExist:
-        return redirect('product_list')
+    product = Product.objects.get(id=product_id)
 
     cart, created = Cart.objects.get_or_create(user=request.user)  
 
@@ -146,16 +213,18 @@ def add_to_cart(request, product_id):
         cart_product.quantity = quantity
         cart_product.save()
 
-        # cart_product.product.stock -= 1
-        # cart_product.product.save() 
     else:
-        cart_product.quantity += quantity
-        cart_product.save()
+        if cart_product.quantity < product.stock:
+            cart_product.quantity += quantity
+            cart_product.save()
+        else:
+            messages.warning(request,f"Sorry, only {product.stock} units are left in stock ☹️☹️☹️. You already have {product.stock} units in your cart.")
+            return redirect('smart-phone') 
 
-        # cart_product.product.stock -= 1
-        # cart_product.product.save() 
 
-    return redirect('viewcart')
+
+    messages.success(request,"Product added to cart 😃")        
+    return redirect('smart-phone')
 
 def remove_from_cart(request,product_id):
     cart = Cart.objects.get(user=request.user)
@@ -166,7 +235,6 @@ def remove_from_cart(request,product_id):
     cart.save()
 
     return redirect('viewcart')
-
 
 def checkout(request):
 
@@ -193,7 +261,7 @@ def checkout(request):
                 OrderItems.objects.create(order = order ,product = cart_product.product, quantity = cart_product.quantity, net_amount = cart_product.net_amount)
 
             cart_products.delete()
-            messages.success(request, "Your order has been placed successfully")
+            messages.success(request, "Your order has been placed successfully 😍")
             users_cart.total = 0
             users_cart.save()
 
@@ -202,9 +270,6 @@ def checkout(request):
     return render(request, 'home/checkout.html')    
 
 def view_orders(request,oid):
-    #getting the user instance
-    user = request.user
-
     
     orders_details = Orders.objects.all().get(id = oid)
     
@@ -256,7 +321,8 @@ def create_account(request):
             user = User.objects.create(username = request.POST.get('first_name') + request.POST.get('last_name'),first_name = request.POST.get('first_name'),last_name = request.POST.get('last_name'), email = request.POST.get('email'), password = make_password(request.POST.get('password')))
 
             user_profile = Profile.objects.create(user = user, birth_date = birth_date,contact_number = request.POST.get('phone'))
-            return render(request,'home/index.html',{"error":f"your username will be : {username}",'status':True})
+            
+            return render(request,'home/index.html',{"error":"Registered Successfully"})
     
     else:
         return render(request,'home/registration.html')
